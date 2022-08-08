@@ -96,6 +96,10 @@ class Lexer:
                 s = float(s)
             else:
                 raise LexerErr("Invalid number")
+            # additional check for floats, that ends with .0
+            if isinstance(s, float):
+                if s.is_integer():
+                    s = int(s)
             # for compatibility reasons, any numbers are "int".
             return ["int", s]
         elif self.ch in "\"'":
