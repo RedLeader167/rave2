@@ -24,7 +24,7 @@ versions = {
 }
 
 VERSIONID = "1.1"
-VERSIONSMALL = "4"
+VERSIONSMALL = "5"
 VCX = clrOrange
 VERSION = f"{VERSIONID}-{VERSIONSMALL} ({clrOrange}{versions[VERSIONID]}{clrReset})"
 
@@ -309,6 +309,26 @@ class ICtx:
                 if top[0] != "int":
                     raise ICtxErr(f"Can't invert {top[0]}")
                 self.stack.push(1 if top[1] == 0 else 0)
+                self.next()
+            elif cl == "$":
+                self.debug("Stack dupe")
+                self.stack.push(self.stack.stack[-1])
+                self.next()
+            elif cl == "@":
+                self.debug("Stack swap")
+                top = self.stack.pop()
+                btm = self.stack.pop()
+                self.stack.push(top)
+                self.stack.push(btm)
+                self.next()
+            elif cl == "_":
+                self.debug("Stack pick")
+                top = self.stack.pop()
+                if top[0] != "int":
+                    raise ICtxErr("Not an integer for pick")
+                if top[1] > len(self.stack.stack):
+                    raise ICtxErr("Picking element farther, than stack bottom") # english is hard
+                self.stack.push(self.stack.stack[-1*top[1]])
                 self.next()
             else:
                 self.debug("Unknown user call")
