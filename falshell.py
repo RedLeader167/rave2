@@ -24,7 +24,7 @@ versions = {
 }
 
 VERSIONID = "1.1"
-VERSIONSMALL = "3"
+VERSIONSMALL = "4"
 VCX = clrOrange
 VERSION = f"{VERSIONID}-{VERSIONSMALL} ({clrOrange}{versions[VERSIONID]}{clrReset})"
 
