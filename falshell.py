@@ -9,6 +9,8 @@ class LexerErr(Exception):
 class ICtxErr(Exception):
     pass
 
+CYRILLIC = "АаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЫыЬьЭэЮюЯя"
+
 clrGreen = "\x1b[1;32;40m"
 clrReset = "\x1b[0m"
 clrBlue = "\x1b[1;34;40m"
@@ -24,7 +26,7 @@ versions = {
 }
 
 VERSIONID = "1.1"
-VERSIONSMALL = "5"
+VERSIONSMALL = "6"
 VCX = clrOrange
 VERSION = f"{VERSIONID}-{VERSIONSMALL} ({clrOrange}{versions[VERSIONID]}{clrReset})"
 
@@ -133,7 +135,7 @@ class Lexer:
                 self.next()
             self.next()
             return ["str", s]
-        elif self.ch in string.ascii_lowercase + "`~!@#$%^&*()-_=+\\|/{},.<>?":
+        elif self.ch in string.ascii_lowercase + "`~!@#$%^&*()-_=+\\|/{},.<>?" + CYRILLIC:
             return self.parseI(string.ascii_lowercase, "call")
         elif self.ch in string.ascii_uppercase:
             return self.parseI(string.ascii_uppercase, "var")
@@ -298,6 +300,10 @@ class ICtx:
                     self.stack.push(int(self.stack.pop()[1]))
                 elif self.cmd[1] == "s":
                     self.stack.push(str(self.stack.pop()[1]))
+                elif self.cmd[1] == "o":
+                    self.stack.push(ord(self.stack.pop()[1]))
+                elif self.cmd[1] == "c":
+                    self.stack.push(chr(self.stack.pop()[1]))
                 else:
                     raise ICtxErr(f"Invalid conversion (to '{self.cmd[1]}')")
                 self.next()
@@ -327,6 +333,10 @@ class ICtx:
                 if top[1] > len(self.stack.stack):
                     raise ICtxErr("Picking element farther, than stack bottom") # english is hard
                 self.stack.push(self.stack.stack[-1*top[1]])
+                self.next()
+            elif cl == "л":
+                self.debug("Stack length")
+                self.stack.push(len(self.stack.stack))
                 self.next()
             else:
                 self.debug("Unknown user call")
