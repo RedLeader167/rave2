@@ -271,7 +271,7 @@ versions = {
 VERSIONID = "1.1"
 VERSIONSMALL = "2"
 VCX = clrOrange
-VERSION = f"{VERSIONID} build {VERSIONSMALL} ({clrOrange}{versions[VERSIONID]}{clrReset})"
+VERSION = f"{VERSIONID}-{VERSIONSMALL} ({clrOrange}{versions[VERSIONID]}{clrReset})"
 
 pstack = ManagedStack()
 ptable = ManagedVar()
