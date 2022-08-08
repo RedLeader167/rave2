@@ -33,8 +33,13 @@ class ManagedStack:
         self.stack = pstack if pstack is not None else []
 
     def push(self, item):
-        if isinstance(item, int) or isinstance(item, float):
+        if isinstance(item, int):
             self.stack.append(["int", item])
+        elif isinstance(item, float):
+            if item.is_integer():
+                self.stack.append(["int", int(item)])
+            else:
+                self.stack.append(["int", item])
         elif isinstance(item, str):
             self.stack.append(["str", item])
         else:
