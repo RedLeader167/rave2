@@ -9,6 +9,25 @@ class LexerErr(Exception):
 class ICtxErr(Exception):
     pass
 
+clrGreen = "\x1b[1;32;40m"
+clrReset = "\x1b[0m"
+clrBlue = "\x1b[1;34;40m"
+clrOrange = "\x1b[1;33;40m"
+clrRed = "\x1b[1;31;40m"
+
+versions = {
+    "early": "Slums",
+    "pre1": "Duvaune",
+    "1.0": "Kuro1",
+    "1.1": "Manneban",
+    "future": "Yume"
+}
+
+VERSIONID = "1.1"
+VERSIONSMALL = "3"
+VCX = clrOrange
+VERSION = f"{VERSIONID}-{VERSIONSMALL} ({clrOrange}{versions[VERSIONID]}{clrReset})"
+
 class ManagedStack:
     def __init__(self, pstack=None):
         self.stack = pstack if pstack is not None else []
@@ -68,10 +87,16 @@ class Lexer:
         if self.ch in "0123456789":
             s = "" + self.ch
             self.next()
-            while self.ch in "0123456789":
+            while self.ch in "0123456789.":
                 s += self.ch
                 self.next()
-            s = int(s)
+            if s.count(".") == 0:
+                s = int(s)
+            elif s.count(".") < 2:
+                s = float(s)
+            else:
+                raise LexerErr("Invalid number")
+            # for compatibility reasons, any numbers are "int".
             return ["int", s]
         elif self.ch in "\"'":
             table = {
@@ -278,24 +303,6 @@ class ICtx:
             self.debug("Unknown token - ictx bug?")
             raise ICtxErr("unknown token - falshell bug? report on github.")
 
-clrGreen = "\x1b[1;32;40m"
-clrReset = "\x1b[0m"
-clrBlue = "\x1b[1;34;40m"
-clrOrange = "\x1b[1;33;40m"
-clrRed = "\x1b[1;31;40m"
-
-versions = {
-    "early": "Slums",
-    "pre1": "Duvaune",
-    "1.0": "Kuro1",
-    "1.1": "Manneban",
-    "future": "Yume"
-}
-
-VERSIONID = "1.1"
-VERSIONSMALL = "2"
-VCX = clrOrange
-VERSION = f"{VERSIONID}-{VERSIONSMALL} ({clrOrange}{versions[VERSIONID]}{clrReset})"
 
 pstack = ManagedStack()
 ptable = ManagedVar()
