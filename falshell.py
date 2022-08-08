@@ -88,7 +88,7 @@ class Lexer:
                 tokens.append(token)
         return tokens
 
-    def process(self):
+    def process(self, lmbd=False):
         if self.ch in "0123456789":
             s = "" + self.ch
             self.next()
@@ -142,22 +142,20 @@ class Lexer:
         elif self.ch in " \r\n\t":
             self.next()
         elif self.ch == "[":
-            braces = 0
             self.next()
             tokens = []
             while True:
-                if self.ch == "[":
-                    braces += 1
-                elif self.ch == "]":
-                    braces -= 1
-                    if braces == -1:
-                        break
-                token = self.process()
+                token = self.process(True)
+                if token == False:
+                    break
                 if token is not None:
                     tokens.append(token)
-            self.next()
+            # self.next()
             return ["lambda", tokens]
         elif self.ch == "]":
+            if lmbd:
+                self.next()
+                return False
             raise LexerErr(f"] used without [, maybe you forgot [ sign?")
         else:
             raise LexerErr(f"Invalid character '{self.ch}'")
