@@ -14,7 +14,7 @@ class ManagedStack:
         self.stack = pstack if pstack is not None else []
 
     def push(self, item):
-        if isinstance(item, int):
+        if isinstance(item, int) or isinstance(item, float):
             self.stack.append(["int", item])
         elif isinstance(item, str):
             self.stack.append(["str", item])
@@ -228,6 +228,30 @@ class ICtx:
                 if top[0] != "int" or btm[0] != "int":
                     raise ICtxErr(f"Can't add {top[0]} to {btm[0]}")
                 self.stack.push(top[1] + btm[1])
+                self.next()
+            elif cl == "-":
+                self.debug("Subtraction")
+                top = self.stack.pop()
+                btm = self.stack.pop()
+                if top[0] != "int" or btm[0] != "int":
+                    raise ICtxErr(f"Can't sub {top[0]} from {btm[0]}")
+                self.stack.push(btm[1] - top[1])
+                self.next()
+            elif cl == "/":
+                self.debug("Division")
+                top = self.stack.pop()
+                btm = self.stack.pop()
+                if top[0] != "int" or btm[0] != "int":
+                    raise ICtxErr(f"Can't divide {btm[0]} by {top[0]}")
+                self.stack.push(btm[1] / top[1])
+                self.next()
+            elif cl == "*":
+                self.debug("Multiply")
+                top = self.stack.pop()
+                btm = self.stack.pop()
+                if top[0] != "int" or btm[0] != "int":
+                    raise ICtxErr(f"Can't multiply {top[0]} by {btm[0]}")
+                self.stack.push(top[1] * btm[1])
                 self.next()
             elif cl == "!":
                 self.debug("NOT operator")
