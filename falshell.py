@@ -254,9 +254,9 @@ class ICtx:
                 self.debug("Addition")
                 top = self.stack.pop()
                 btm = self.stack.pop()
-                if top[0] != "int" or btm[0] != "int":
+                if (top[0], btm[0]) not in (("int", "int"), ("str", "str")):
                     raise ICtxErr(f"Can't add {top[0]} to {btm[0]}")
-                self.stack.push(top[1] + btm[1])
+                self.stack.push(btm[1] + top[1])
                 self.next()
             elif cl == "-":
                 self.debug("Subtraction")
@@ -281,6 +281,22 @@ class ICtx:
                 if top[0] != "int" or btm[0] != "int":
                     raise ICtxErr(f"Can't multiply {top[0]} by {btm[0]}")
                 self.stack.push(top[1] * btm[1])
+                self.next()
+            elif cl == ",":
+                self.debug("User input")
+                self.stack.push(input())
+                self.next()
+            elif cl == "c":
+                self.next()
+                if self.cmd[0] != "call":
+                    raise ICtxErr("Wrong conversion")
+                self.debug(f"Conversion to {self.cmd[1]}")
+                if self.cmd[1] == "i":
+                    self.stack.push(int(self.stack.pop()[1]))
+                elif self.cmd[1] == "s":
+                    self.stack.push(str(self.stack.pop()[1]))
+                else:
+                    raise ICtxErr(f"Invalid conversion (to '{self.cmd[1]}')")
                 self.next()
             elif cl == "!":
                 self.debug("NOT operator")
